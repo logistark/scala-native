@@ -373,7 +373,7 @@ object ScalaNativePluginInternal {
       val clangpp     = nativeClangPP.value
       val outpath     = (artifactPath in nativeLink).value
       val stripOpts =
-        if (nativeMode.value == "release") Seq("-Wl,-dead_strip") else Seq("")
+        if (nativeMode.value == "release" && nativeStripOpts.value) Seq("-Wl,-dead_strip") else Seq("")
 
       val links = {
         val os   = Option(sys props "os.name").getOrElse("")
