@@ -372,6 +372,8 @@ object ScalaNativePluginInternal {
       val linkingOpts = nativeLinkingOptions.value
       val clangpp     = nativeClangPP.value
       val outpath     = (artifactPath in nativeLink).value
+      val stripOpts =
+        if (nativeMode.value == "release") Seq("-Wl,-dead_strip") else Seq("")
 
       val links = {
         val os   = Option(sys props "os.name").getOrElse("")
@@ -388,7 +390,7 @@ object ScalaNativePluginInternal {
         librt ++ libunwind ++ linked.links
           .map(_.name) ++ garbageCollector(gc).links
       }
-      val linkopts  = links.map("-l" + _) ++ linkingOpts
+      val linkopts  = links.map("-l" + _) ++ linkingOpts ++ stripOpts
       val targetopt = Seq("-target", target)
       val flags     = Seq("-o", outpath.abs) ++ linkopts ++ targetopt
       val opaths    = (nativelib ** "*.o").get.map(_.abs)
